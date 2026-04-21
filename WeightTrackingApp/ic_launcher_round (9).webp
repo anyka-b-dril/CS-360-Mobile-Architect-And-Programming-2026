@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:paddingBottom="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp">
+
+    <!-- Header Text: App Name !-->
+    <TextView
+        android:id="@+id/appName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:gravity="end"
+        android:text="FitFocus"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:paddingBottom="16dp"
+        android:paddingRight="75dp"/>
+
+    <!-- Header Image: Target Logo !-->
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+
+        android:paddingBottom="16dp"
+        android:paddingLeft="300dp"
+        android:layout_alignEnd="@id/appName"
+        android:contentDescription="Target Logo"/>
+
+    <!-- Status widget !-->
+    <!-- TODO: Variablize the text !-->
+    <TextView
+        android:id="@+id/currentWeight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="52sp"
+        android:gravity="center_horizontal"
+        android:layout_centerInParent="true"
+        android:text="150 lbs."
+        android:paddingBottom="16dp"/>
+
+    <!-- Til goal widget !-->
+    <!-- TODO: Variablize the text !-->
+    <TextView
+        android:id="@+id/tilGoalStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="36sp"
+        android:gravity="center_horizontal"
+        android:layout_centerInParent="true"
+        android:text="10 lbs to go!"
+        android:layout_alignEnd="@id/currentWeight"
+        android:layout_below="@id/currentWeight"
+        android:paddingBottom="16dp"/>
+
+    <!-- Add weight record !-->
+    <ImageButton
+        android:id="@+id/addButton"
+        android:src="@drawable/add"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignEnd="@id/tilGoalStatus"
+        android:layout_below="@id/tilGoalStatus"
+        android:baselineAlignBottom="true"
+        android:background="@color/bluebellBlue">
+    </ImageButton>
+</RelativeLayout>

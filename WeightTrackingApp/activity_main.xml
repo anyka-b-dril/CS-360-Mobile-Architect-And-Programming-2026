@@ -1,0 +1,99 @@
+package com.example.cs360_weightappfinal_anyka.fragments;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+
+import androidx.fragment.app.Fragment;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.example.cs360_weightappfinal_anyka.AuthActivity;
+import com.example.cs360_weightappfinal_anyka.DBHelper;
+import com.example.cs360_weightappfinal_anyka.MainActivity;
+import com.example.cs360_weightappfinal_anyka.R;
+
+public class SignupFragment extends Fragment {
+    Button createAccountButton;
+    EditText etUsername;
+    EditText etPassword;
+    EditText etPhone;
+    DBHelper dbHelper;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        // Ref: https://www.youtube.com/watch?v=WAejZCkLJAI @7:00
+        View view = inflater.inflate(R.layout.fragment_signup, container, false);
+        createAccountButton = view.findViewById(R.id.createAccountButton);
+        createAccountButton.findViewById(R.id.createAccountButton);
+
+        etUsername = view.findViewById(R.id.usernameField);
+        etPassword = view.findViewById(R.id.passwordField);
+        etPhone = view.findViewById(R.id.phoneField);
+        dbHelper = new DBHelper(getContext());
+
+        // When Create Account button is pressed, navigate to Home
+        // Ref: https://learn.zybooks.com/zybook/CS-360-17398.202616-1/chapter/3/section/6
+        // Ref: https://learn.zybooks.com/zybook/CS-360-17398.202616-1/chapter/5/section/1
+        createAccountButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Initialize variables
+                String username;
+                String password;
+                String phone;
+                // Set variables to edit text content
+                username = etUsername.getText().toString();
+                password = etPassword.getText().toString();
+                phone = etPhone.getText().toString();
+
+                // If any fields are empty, inform user to fill out fields
+                if (username.equals("") || password.equals("") || phone.equals("")) {
+                    Toast.makeText(getContext(), "Please fill in all fields...", Toast.LENGTH_LONG).show();
+                }
+                // Check phone number length
+                if (phone.length() != 10) {
+                    Toast.makeText(getContext(), "Please enter a valid phone number.", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    // Check if user already exists
+                    if (dbHelper.checkUsername(username)) {
+                        Toast.makeText(getContext(), "User already exists.", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    // Continue with registration
+                    boolean registerSuccess = dbHelper.insertUser(username, password, phone);
+                    // if registration is successful, continue to home page
+                    if (registerSuccess) {
+                        // Save username as a session
+                        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("current_username", username);
+                        editor.apply();
+
+                        // Tell user successful
+                        Toast.makeText(getContext(), "User registered successfully!", Toast.LENGTH_LONG).show();
+
+                        // Create intent to home page
+                        Intent intent = new Intent(v.getContext(), MainActivity.class);
+                        startActivity(intent);
+                        //Navigation.findNavController(v).navigate(R.id.action_login_to_home);
+                    }
+                    else {
+                        Toast.makeText(getContext(), "User registered failed!", Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+        });
+        // Inflate the layout for this fragment
+        return view;
+    }
+}

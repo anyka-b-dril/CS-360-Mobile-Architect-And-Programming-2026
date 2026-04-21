@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- Banner !-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@color/pink">
+        <ImageView
+            android:src="@drawable/edit"
+            android:layout_centerInParent="true"
+            android:layout_width="match_parent"
+            android:layout_height="50dp" />
+    </RelativeLayout>
+
+    <!-- Info  !-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:orientation="vertical"/>
+
+    <TextView
+        android:id="@+id/dateText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:gravity="center_horizontal"
+        android:text="DATE"
+        android:paddingBottom="16dp"
+        android:textColor="@color/black"/>
+
+    <!-- Weight Record !-->
+    <TextView
+        android:id="@+id/weightRecord"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:gravity="center_horizontal"
+        android:text="100.00"
+        android:layout_alignEnd="@id/dateText"
+        android:layout_below="@id/dateText"
+        android:paddingBottom="16dp"
+        android:textColor="@color/black"
+        android:textStyle="bold" />
+
+    <!-- Divider !-->
+    <!-- Ref: https://github.com/material-components/material-components-android/blob/master/docs/components/Divider.md !-->
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/goal"/>
+
+    <!-- Edit Label  !-->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <!-- User input  !-->
+        <EditText
+            android:id="@+id/newWeight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:paddingLeft="16dp"
+            android:layout_alignParentLeft="true"
+            android:hint="Update recorded weight"
+            android:inputType="numberDecimal"/>
+
+        <Button
+            android:id="@+id/deleteRecord"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignRight="@+id/newWeight"
+            android:text="Delete">
+        </Button>
+
+        <!-- Divider !-->
+        <!-- Ref: https://github.com/material-components/material-components-android/blob/master/docs/components/Divider.md !-->
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/goal"
+            android:layout_alignBottom="@+id/newWeight"/>
+
+    </RelativeLayout>
+
+    <!-- Buttons  !-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingRight="5dp"
+        android:paddingLeft="5dp">
+
+        <!-- Cancel  !-->
+        <Button
+            android:id="@+id/cancelUpdateRecord"
+            android:layout_width="175dp"
+            android:layout_height="50dp"
+            android:layout_alignParentLeft="true"
+            android:text="Cancel">
+        </Button>
+
+        <!-- Save  !-->
+        <Button
+            android:id="@+id/saveUpdateRecord"
+            android:layout_width="175dp"
+            android:layout_height="50dp"
+            android:layout_alignParentRight="true"
+            android:text="Save">
+        </Button>
+
+    </RelativeLayout>
+
+</LinearLayout>

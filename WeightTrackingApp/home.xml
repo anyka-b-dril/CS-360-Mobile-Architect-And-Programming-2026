@@ -1,0 +1,325 @@
+package com.example.cs360_weightappfinal_anyka;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.telephony.SmsManager;
+import android.util.Log;
+import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class DBHelper extends SQLiteOpenHelper {
+    public static final String DBName = "FitFocus.db";
+
+    public DBHelper(@Nullable Context context) {
+        super(context, DBName, null, 1);
+    }
+
+    // Create tables for users, weight, and goal
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        // Users
+        db.execSQL("CREATE TABLE users (" + "username TEXT PRIMARY KEY, " + "password TEXT, " + "phone TEXT)");
+        // Weight Logs
+        db.execSQL("CREATE TABLE weight (" + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "username TEXT, " + "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, " + "weight_value REAL, " + "FOREIGN KEY(username) REFERENCES users(username))" );
+        // Goal
+        db.execSQL("CREATE TABLE goal (" + "username TEXT PRIMARY KEY, " + "weight_goal REAL, " + "FOREIGN KEY(username) REFERENCES users(username))" );
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("drop table if exists weight"); // Drop children tables first
+        db.execSQL("drop table if exists goal");
+        db.execSQL("drop table if exists users");
+
+        onCreate(db);
+    }
+
+    private static DBHelper instance;
+
+    public static synchronized DBHelper getInstance(Context context) {
+        if (instance == null) {
+            instance = new DBHelper(context.getApplicationContext());
+        }
+        return instance;
+    }
+
+    public void deleteUserAccount(String username) {
+        SQLiteDatabase myDB = this.getWritableDatabase();
+
+        // Delete their logs and goals first
+        myDB.delete("weight", "username = ?", new String[]{username});
+        myDB.delete("goal", "username = ?", new String[]{username});
+
+        // Finally, delete the user
+        myDB.delete("users", "username = ?", new String[]{username});
+    }
+
+    // Add user to user table
+    public boolean insertUser(String username, String password, String phone) {
+        // Get database
+        SQLiteDatabase myDB = this.getWritableDatabase();
+        // Initialize values
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("username", username);
+        contentValues.put("password", password);
+        contentValues.put("phone", phone);
+        // Evaluate if values already exist
+        long result = myDB.insert("users", null, contentValues);
+        if (result == -1) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+    // Get phone
+    public String getPhone (String username) {
+        String phone = "";
+        // Get database
+        SQLiteDatabase myDB = this.getReadableDatabase();
+        Cursor cursor = myDB.rawQuery("SELECT phone FROM users WHERE username = ?", new String[]{username});
+
+        // If a result was found, return the phone value
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                phone = cursor.getString(0);
+            }
+            cursor.close();
+        }
+        return (phone == null) ? "" : phone;
+    }
+
+    // Update phone
+    public boolean updatePhoneEntry (String username, String newPhone) {
+        // Get database
+        SQLiteDatabase myDB = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("phone", newPhone);
+
+        // Update row where username matches
+        int result = myDB.update("users", contentValues, "username = ?", new String[]{String.valueOf(username)});
+        return result > 0;
+    }
+
+    // Add weight to weight table
+    public boolean insertWeight(String username, double weightValue) {
+        // Get database
+        SQLiteDatabase myDB = this.getWritableDatabase();
+        // Initialize values
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("username", username);
+        contentValues.put("weight_value", weightValue);
+        // Add the entry to the table
+        long result = myDB.insert("weight", null, contentValues);
+        // If result is -1, the insertion failed
+        Log.d("DB_INSERT", "Insert ID: " + result);
+        return result != -1;
+    }
+
+    // Get latest weight entry
+    public double getLatestWeight(String username) {
+        // If no weight has been logged, show 0
+        double latestWeight = 0.0;
+        // Get database
+        SQLiteDatabase myDB = this.getReadableDatabase(); // readable = getter
+        Cursor cursor = myDB.rawQuery("select * from weight where username = ? order by id desc limit 1", new String[]{username});
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                int weightIndex = cursor.getColumnIndex("weight_value");
+
+                // Validate column exists
+                if (weightIndex != -1) {
+                    latestWeight = cursor.getDouble(weightIndex);
+                }
+                else {
+                    Log.e("DB_ERROR", "Column weight_value not found");
+                }
+            }
+            cursor.close();
+        }
+        return latestWeight;
+    }
+
+    // Get weight history
+    public List<WeightRecord> getWeightHistory (String username) {
+        // Initialize the list
+        List<WeightRecord> history = new ArrayList<>();
+
+        // Get database: read mode
+        SQLiteDatabase myDB = this.getReadableDatabase();
+        Log.d("DB_PATH", "Reading from: " + myDB.getPath());
+
+        Cursor cursor = myDB.rawQuery("select * from weight where username = ? order by timestamp desc", new String[]{username});
+
+        Log.d("DB_CHECK", "Raw query count: " + cursor.getCount());
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                // double previousWeight = -1; // Temporary variable to calculate change
+                do {
+                    // Get ID
+                    int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                    // Get date
+                    String date = cursor.getString(cursor.getColumnIndexOrThrow("timestamp"));
+                    // Get weight
+                    double currWeight = cursor.getDouble(cursor.getColumnIndexOrThrow("weight_value"));
+
+                    // Create record object and add to list
+                    WeightRecord record = new WeightRecord(id, date, currWeight);
+                    history.add(record);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+        // Return an empty list [] if no records exist
+        return history;
+    }
+
+    // Update an entry
+    public boolean updateWeightEntry (int id, double newWeight ) {
+        // Get database
+        SQLiteDatabase myDB = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("weight_value", newWeight);
+
+        // Update row where id matches
+        int result = myDB.update("weight", cv, "id = ?", new String[]{String.valueOf(id)});
+        return result > 0;
+    }
+
+    // Delete an entry
+    public boolean deleteWeightEntry (int id) {
+        // Get database
+        SQLiteDatabase myDB = this.getWritableDatabase();
+
+        long result = myDB.delete("weight", "id = ?", new String[]{String.valueOf(id)});
+        // If the result > 0, it was successful
+        return result > 0;
+    }
+
+    // Add goal to goal table
+    public boolean insertGoal(String username, double goalWeight) {
+        // Get database
+        SQLiteDatabase myDB = this.getWritableDatabase();
+        // Initialize values
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("username", username);
+        contentValues.put("weight_goal", goalWeight);
+        // Add the entry to the table
+        long result = myDB.insert("goal", null, contentValues);
+        // If result is -1, the insertion failed
+        return result != -1;
+    }
+
+    // Get goal weight
+    public double getGoalWeight(String username) {
+        // If no goal has been logged, show 0
+        double goal = 0.0;
+        // Get database
+        SQLiteDatabase myDB = this.getReadableDatabase(); // readable = getter
+        Cursor cursor = myDB.rawQuery("select * from goal where username = ?", new String[]{username});
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                int goalIndex = cursor.getColumnIndex("weight_goal");
+
+                // Validate column exists
+                if (goalIndex != -1) {
+                    goal = cursor.getDouble(goalIndex);
+                }
+                else {
+                    Log.e("DB_ERROR", "Column weight_value not found");
+                }
+            }
+            cursor.close();
+        }
+        return goal;
+    }
+
+    // Update goal in goal table
+    public boolean updateGoal(String username, double goalWeight) {
+        // Get database
+        SQLiteDatabase myDB = this.getWritableDatabase();
+        // Initialize values
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("weight_goal", goalWeight);
+        // Update the entry to the table
+        long result = myDB.update("goal", contentValues, "username = ?", new String[]{username});
+        // If result is > 0, the update was successful
+        return result > 0;
+    }
+
+    // Validate no duplicate usernames
+    public boolean checkUsername(String username) {
+        SQLiteDatabase myDB = this.getWritableDatabase();
+        Cursor cursor = myDB.rawQuery("select * from users where username = ?", new String[]{username});
+        // if any results return, the user already exists
+        if (cursor.getCount() > 0) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    // Validate username and password for login
+    public boolean validateLogin(String username, String password) {
+        SQLiteDatabase myDB = this.getWritableDatabase();
+        Cursor cursor = myDB.rawQuery("select * from users where username = ? and password = ?", new String[]{username, password});
+        // if any results return, the user exists in the database
+        if (cursor.getCount() > 0) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    // Send goal notification NO SMS
+    public void checkGoal(Context context, double current, double goal){
+        if (current > 0 && (Math.abs(current - goal) < 0.1)) {
+            Toast.makeText(context, "Goal reached!", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    // Send goal notification SMS
+    // Note: Without external dependencies, the app will always self text
+    public void checkAndSendGoalSMS(Context context, String username, double current, double goal) {
+        // If the current is set and the difference between the goal and current weight is less than .01
+        if (current > 0 && (Math.abs(current - goal) < 0.1)) {
+            // Get user phone
+            String userPhone = getPhone(username);
+            // Validate phone is populated
+            if (userPhone.isEmpty()) {
+                Log.e("SMS_ERROR", "No phone number found for user: " + username);
+                return;
+            }
+            // Check for permission at runtime
+            if (androidx.core.content.ContextCompat.checkSelfPermission(context,
+                    android.Manifest.permission.SEND_SMS) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+
+                // Attempt to sent message
+                try {
+                    SmsManager smsManager = SmsManager.getDefault();
+                    String message = "Congratulations! You reached your weight goal of " + goal + " lbs!";
+
+                    smsManager.sendTextMessage(userPhone, null, message, null, null);
+                    // Report success
+                    Toast.makeText(context, "Goal reached!", Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    // Report error
+                    Log.e("SMS_ERROR", "Failed to send SMS", e);
+                }
+            }
+        }
+    }
+}

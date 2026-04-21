@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/authScreen"
+    android:orientation="vertical"
+    android:paddingBottom="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp"
+    android:background="@color/pink">
+        <!-- Add tools:context="com.example.cs360_weightapp_anyka.MainActivity" when coding>!-->
+
+        <!-- Header Image: Target Logo !-->
+        <!-- TODO: Add app logo when not crashing !-->
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+
+            android:paddingBottom="16dp"
+            android:paddingLeft="40dp"
+            android:contentDescription="Target Logo"/>
+
+        <!-- Header Text: Welcome Banner !-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="32sp"
+            android:textAlignment="center"
+            android:text="FitFocus"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:paddingBottom="16dp"/>
+
+        <!-- Auth Menu !-->
+        <!--Ref: https://github.com/material-components/material-components-android/blob/master/docs/components/Tabs.md#adding-tabs !-->
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/authMenu"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            app:tabMode="fixed">
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:outlineAmbientShadowColor="@color/shadowBlue"
+                android:outlineSpotShadowColor="@color/shadowBlue"
+                android:text="Login"/>
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sign Up"/>
+
+        </com.google.android.material.tabs.TabLayout>
+
+        <!-- Ref: https://www.youtube.com/watch?v=pIKdHeOjYNw !-->
+        <!-- This creates the two menu views !-->
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"/>
+
+    </LinearLayout>

@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp"
+    android:gravity="center_horizontal"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:id="@+id/header">
+
+    <!-- TODO: Variablize text view text values !-->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <!-- Header Image: Target Logo !-->
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+
+            android:paddingBottom="16dp"
+            android:paddingStart="300dp"
+            android:paddingEnd="10dp"
+            android:contentDescription="Target Logo"/>
+
+        <!-- Screen Title !-->
+        <TextView
+            android:id="@+id/screenTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Profile Settings"
+            android:textSize="32sp"
+            android:textColor="@color/black"
+            android:layout_gravity="start"
+            android:paddingBottom="16dp">
+        </TextView>
+    </RelativeLayout>
+
+    <!-- Profile Data !-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="5dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="5dp"
+        android:clickable="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/nameLabel"
+            android:text="Name:"
+            android:textSize="24sp"
+            android:textColor="@color/black">
+        </TextView>
+
+        <LinearLayout
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingTop="5dp"
+            android:layout_alignParentEnd="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/nameField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Jane Doe"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:textSize="24sp" />
+        </LinearLayout>
+
+        <!-- Divider !-->
+        <!-- Ref: https://github.com/material-components/material-components-android/blob/master/docs/components/Divider.md !-->
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/name"/>
+
+    </RelativeLayout>
+
+    <!-- Phone Field !-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="5dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="5dp"
+        android:clickable="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/phoneLabel"
+            android:text="Phone:"
+            android:textSize="24sp"
+            android:textColor="@color/black">
+        </TextView>
+
+        <LinearLayout
+            android:id="@+id/phone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingTop="5dp"
+            android:layout_alignParentEnd="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/phoneField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="6505551212"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:textSize="24sp"
+                />
+
+            <!-- Add onCLick event !-->
+            <ImageButton
+                android:id="@+id/editPhone"
+                android:layout_width="48dp"
+                android:layout_height="32dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/chevron"
+                />
+        </LinearLayout>
+
+        <!-- Divider !-->
+        <!-- Ref: https://github.com/material-components/material-components-android/blob/master/docs/components/Divider.md !-->
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/phone"/>
+
+    </RelativeLayout>
+
+    <!-- Weight Field !-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="5dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="5dp"
+        android:clickable="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/weightLabel"
+            android:text="Current Weight:"
+            android:textSize="24sp"
+            android:textColor="@color/black">
+        </TextView>
+
+        <LinearLayout
+            android:id="@+id/weight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingTop="5dp"
+            android:layout_alignParentEnd="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/weightField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="150 lbs"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:textSize="24sp" />
+
+            <ImageButton
+                android:id="@+id/editWeight"
+                android:layout_width="48dp"
+                android:layout_height="32dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/chevron"
+                />
+        </LinearLayout>
+
+        <!-- Divider !-->
+        <!-- Ref: https://github.com/material-components/material-components-android/blob/master/docs/components/Divider.md !-->
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/weight"/>
+
+    </RelativeLayout>
+
+    <!-- Goal Field !-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="5dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="5dp"
+        android:clickable="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/goalLabel"
+            android:text="Goal Weight:"
+            android:textSize="24sp"
+            android:textColor="@color/black">
+        </TextView>
+
+        <LinearLayout
+            android:id="@+id/goal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingTop="5dp"
+            android:layout_alignParentEnd="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/goalField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="185 lbs"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:textSize="24sp"
+                />
+
+            <!-- Add onCLick event !-->
+            <ImageButton
+                android:id="@+id/editGoal"
+                android:layout_width="48dp"
+                android:layout_height="32dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/chevron"
+                />
+        </LinearLayout>
+
+        <!-- Divider !-->
+        <!-- Ref: https://github.com/material-components/material-components-android/blob/master/docs/components/Divider.md !-->
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/goal"/>
+
+    </RelativeLayout>
+
+    <!-- Notification Field !-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="5dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="5dp"
+        android:clickable="true">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/notification"
+        android:text="Notifications:"
+        android:textSize="28sp"
+        android:textColor="@color/black">
+    </TextView>
+
+    <LinearLayout
+        android:id="@+id/notificationsField"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="5dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="5dp"
+        android:layout_alignParentEnd="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <!-- Notifications enabled !-->
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/notification_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <!-- Divider !-->
+    <!-- Ref: https://github.com/material-components/material-components-android/blob/master/docs/components/Divider.md !-->
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/notificationsField"/>
+    </RelativeLayout>
+
+    <!-- Push navigation bar to the bottom !-->
+    <!-- Ref: https://stackoverflow.com/questions/58250832/how-to-make-bottom-navigation-stay-at-the-bottom-in-linearlayout !-->
+    <LinearLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+    </LinearLayout>
+
+</LinearLayout>

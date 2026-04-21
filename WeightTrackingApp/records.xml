@@ -1,0 +1,336 @@
+package com.example.cs360_weightappfinal_anyka.fragments;
+
+import static androidx.core.content.PermissionChecker.checkSelfPermission;
+import static java.lang.Math.abs;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.fragment.app.Fragment;
+
+import com.example.cs360_weightappfinal_anyka.DBHelper;
+import com.example.cs360_weightappfinal_anyka.R;
+
+import org.w3c.dom.Text;
+
+public class ProfileFragment extends Fragment {
+    String username;
+    DBHelper dbHelper;
+    TextView name;
+    TextView phone;
+    TextView weight;
+    TextView goal;
+    ImageButton etPhone;
+    ImageButton etWeight;
+    ImageButton etGoal;
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        dbHelper = DBHelper.getInstance(getContext());
+
+        name = view.findViewById(R.id.nameField);
+        phone = view.findViewById(R.id.phoneField);
+        weight = view.findViewById(R.id.weightField);
+        goal = view.findViewById(R.id.goalField);
+
+        etPhone = view.findViewById(R.id.editPhone);
+        etWeight = view.findViewById(R.id.editWeight);
+        etGoal = view.findViewById(R.id.editGoal);
+
+        // Get user
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+        // If no user currently active, log as guest
+        username = sharedPreferences.getString("current_username", "Guest");
+
+        // Set the username as the Name
+        name.setText(username);
+
+        // Set the phone number as phone
+        String phoneNumber = dbHelper.getPhone(username);
+        phone.setText(phoneNumber);
+
+        double current = dbHelper.getLatestWeight(username);
+        double goalWeight = dbHelper.getGoalWeight(username);
+
+        // If weight has been logged display data, else display 0.0
+        if (current != 0.0) {
+            weight.setText(Double.toString(current) + " lbs");
+            goal.setText(Double.toString(goalWeight) + " lbs");
+        }
+        else {
+            weight.setText("0.0");
+            goal.setText("0.0");
+        }
+
+        // On button (>) click, open dialog box to update selected field
+        // Ref: https://www.youtube.com/watch?v=J7m5Gq-Kiqs @7:00
+        Dialog dialog = new Dialog(getContext());
+        /*
+            Phone Number
+         */
+        etPhone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.setContentView(R.layout.dialog_phone);
+                dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+                // When save button is clicked, update the database and dismiss
+                Button buttonSave = dialog.findViewById(R.id.saveNewPhone);
+
+                buttonSave.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Add record to the database
+                        EditText inputPhone = dialog.findViewById(R.id.newPhone);
+                        String newPhone = inputPhone.getText().toString();
+                        if (!newPhone.equals("") || newPhone.length() != 10) {
+                            // Show error
+                            Toast.makeText(getContext(), "Error: Please enter a valid phone number.", Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            // Validate user input
+                            if (dbHelper.updatePhoneEntry(username, newPhone)) {
+                                Log.d("DB_UPDATE", "Updating phone for user: " + username);
+                                // Update the phone text view
+                                phone.setText(newPhone);
+                                // Show user success
+                                Toast.makeText(getContext(), "Phone number updated!", Toast.LENGTH_SHORT).show();
+                            }
+                            else {
+                                // Show error
+                                Toast.makeText(getContext(), "Action failed. Try again.", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        // Close the dialog box
+                        dialog.dismiss();
+                    }
+                });
+
+                // When cancel button is clicked, dismiss the dialog
+                Button buttonCancel = dialog.findViewById(R.id.cancelEditPhone);
+                buttonCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Close the dialog box
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+            }
+        });
+
+        /*
+            Current Weight
+         */
+        etWeight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.setContentView(R.layout.dialog_weight);
+                dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+                // When save button is clicked, update the database and dismiss
+                Button buttonSave = dialog.findViewById(R.id.saveAddRecord);
+
+                buttonSave.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Add record to the database
+                        EditText inputWeight = dialog.findViewById(R.id.newWeight);
+                        String newWeight = inputWeight.getText().toString();
+                        // Validate user input
+                        try {
+                            double newWeightRecord = Double.parseDouble(newWeight);
+                            if (dbHelper.insertWeight(username, newWeightRecord)) {
+                                Log.d("DB_SAVE", "Saving weight for user: " + username);
+                                // Update the weight text view
+                                weight.setText(newWeight + " lbs");
+                                // Show user success
+                                Toast.makeText(getContext(), "Record added", Toast.LENGTH_SHORT).show();
+                                // Check for goal match
+                                double goal = dbHelper.getGoalWeight(username);
+                                // Check SMS
+                                boolean canSendSms = sharedPreferences.getBoolean("sms_enabled", false);
+                                // If canSendSMS, send SMS notification; else display toast
+                                if (canSendSms) {
+                                    dbHelper.checkAndSendGoalSMS(getContext(), username, newWeightRecord, goal);
+                                }
+                                else {
+                                    dbHelper.checkGoal(getContext(), newWeightRecord, goal);
+                                }
+                            }
+                            else {
+                                // Show error
+                                Toast.makeText(getContext(), "Action failed. Try again.", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        catch (NumberFormatException e) {
+                            // Show error
+                            Toast.makeText(getContext(), "Please enter a number (eg. 100.00)", Toast.LENGTH_SHORT).show();
+                        }
+                        // Close the dialog box
+                        dialog.dismiss();
+                    }
+                });
+
+                // When cancel button is clicked, dismiss the dialog
+                Button buttonCancel = dialog.findViewById(R.id.cancelAddRecord);
+                buttonCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Close the dialog box
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+            }
+        });
+
+        /*
+            Goal Weight
+         */
+        etGoal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.setContentView(R.layout.dialog_goal);
+                dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+                // When save button is clicked, update the database and dismiss
+                Button buttonSave = dialog.findViewById(R.id.saveNewGoal);
+
+                buttonSave.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Add goal to the database
+                        EditText inputWeight = dialog.findViewById(R.id.newGoal);
+                        String newWeight = inputWeight.getText().toString();
+                        // Get current goal to determine if this is an update or an insert
+                        String currGoal = goal.getText().toString();
+                        double currentGoalInDB = dbHelper.getGoalWeight(username);
+
+                        // Validate user input
+                        try {
+                            double newWeightGoal = Double.parseDouble(newWeight);
+                            // If goal is being set for the first time
+                            if (currentGoalInDB == 0.0) {
+                                if (dbHelper.insertGoal(username, newWeightGoal)) {
+                                    Log.d("DB_SAVE", "Saving goal for user: " + username);
+                                    // Update the goal text view
+                                    goal.setText(newWeight + " lbs");
+                                    // Show user success
+                                    Toast.makeText(getContext(), "Congrats! Goal added :)", Toast.LENGTH_SHORT).show();
+                                }
+                                else {
+                                    // Show error
+                                    Toast.makeText(getContext(), "Action failed. Try again.", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                            // If goal is being updated
+                            // If goal is not the default value, the input does not equal and is not negative, update the database
+                            else if ((currentGoalInDB != 0.0) && (newWeightGoal != 0.0) && (newWeightGoal > 0.0)) {
+                                if (dbHelper.updateGoal(username, newWeightGoal)) {
+                                    // Update the goal text view
+                                    goal.setText(newWeight + " lbs");
+                                    // Show user success
+                                    Toast.makeText(getContext(), "Goal updated :)", Toast.LENGTH_SHORT).show();
+                                }
+                                else {
+                                    // Show error
+                                    Toast.makeText(getContext(), "Action failed. Try again.", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+                        catch (NumberFormatException e) {
+                            // Show error
+                            Toast.makeText(getContext(), "Please enter a valid number (eg. 100.00)", Toast.LENGTH_SHORT).show();
+                        }
+                        // Close the dialog box
+                        dialog.dismiss();
+                    }
+                });
+
+                // When cancel button is clicked, dismiss the dialog
+                Button buttonCancel = dialog.findViewById(R.id.cancelNewGoal);
+                buttonCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Close the dialog box
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+            }
+        });
+
+        // Enable/Disable SMS notifications
+
+        // Initialize switch
+        SwitchCompat notificationSwitch = view.findViewById(R.id.notification_switch);
+
+        // Set the switch to the PREVIOUSLY saved state when the view loads
+        boolean isSmsEnabled = sharedPreferences.getBoolean("sms_enabled", false);
+
+        // If user disabled SMS in settings, update switch position
+        if (androidx.core.content.ContextCompat.checkSelfPermission(getContext(),
+                android.Manifest.permission.SEND_SMS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            isSmsEnabled = false;
+        }
+        notificationSwitch.setChecked(isSmsEnabled);
+
+        notificationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                // Save the new state to SharedPreferences
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean("sms_enabled", isChecked);
+                editor.apply();
+
+                if (isChecked) {
+                    // Check for permission at runtime
+                    if (androidx.core.content.ContextCompat.checkSelfPermission(requireContext(),
+                            android.Manifest.permission.SEND_SMS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+
+                        // Request permission (Fragment version)
+                        requestPermissions(new String[]{android.Manifest.permission.SEND_SMS}, 101);
+                    } else {
+                        Toast.makeText(getContext(), "SMS Notifications Enabled", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else {
+                    Toast.makeText(getContext(), "SMS Notifications Disabled", Toast.LENGTH_SHORT).show();
+                }
+            };
+        });
+        // Inflate the layout for this fragment
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Refresh the profile fields whenever the user navigates back to this tab
+        double current = dbHelper.getLatestWeight(username);
+        double goalWeight = dbHelper.getGoalWeight(username);
+        String phoneNumber = dbHelper.getPhone(username);
+
+        weight.setText(current + " lbs");
+        goal.setText(goalWeight + " lbs");
+        phone.setText(phoneNumber);
+    }
+}

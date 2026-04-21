@@ -1,0 +1,21 @@
+package com.example.cs360_weightappfinal_anyka;
+
+public class WeightRecord {
+    private int id;
+    private String date;
+    private double weight;
+    //private String change;
+
+    public WeightRecord(int id, String date, double weight) {
+        this.id = id;
+        this.date = date;
+        this.weight = weight;
+        //this.change = change;
+    }
+
+    // Getters
+    public int getID() {return id;}
+    public String getDate() { return date; }
+    public double getWeight() { return weight; }
+    //public String getChange() { return change; }
+}

@@ -1,0 +1,159 @@
+package com.example.cs360_weightappfinal_anyka.fragments;
+
+import static java.lang.Math.abs;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.fragment.app.Fragment;
+
+import com.example.cs360_weightappfinal_anyka.DBHelper;
+import com.example.cs360_weightappfinal_anyka.R;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+// Ref: https://www.youtube.com/watch?v=OV25x3a55pk
+
+public class HomeFragment extends Fragment {
+
+    TextView currentWeight;
+    TextView goalStatus;
+    DBHelper dbHelper;
+    String username;
+    ImageButton addButton;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        currentWeight = view.findViewById(R.id.currentWeight);
+        goalStatus = view.findViewById(R.id.tilGoalStatus);
+        dbHelper = DBHelper.getInstance(getContext());
+        addButton = view.findViewById(R.id.addButton);
+
+        // Get user
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+        // If no user currently active, log as guest
+        username = sharedPreferences.getString("current_username", "Guest");
+
+        double current = dbHelper.getLatestWeight(username);
+        double goal = dbHelper.getGoalWeight(username);
+
+        // If weight has been logged display data
+        if (current != 0.0) {
+            double goalDiff = abs(current - goal);
+
+            currentWeight.setText(Double.toString(current) + " lbs");
+            goalStatus.setText(Double.toString(goalDiff) + " lbs to go!");
+        }
+        else {
+            currentWeight.setText("0.0");
+            goalStatus.setText("No goal set!");
+        }
+
+        Dialog dialog = new Dialog(getContext());
+
+        /*
+            Add record
+         */
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.setContentView(R.layout.dialog_weight);
+                dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+                // When save button is clicked, update the database and dismiss
+                Button buttonSave = dialog.findViewById(R.id.saveAddRecord);
+
+                buttonSave.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Add record to the database
+                        EditText inputWeight = dialog.findViewById(R.id.newWeight);
+                        String newWeight = inputWeight.getText().toString();
+                        // Validate user input
+                        try {
+                            double newWeightRecord = Double.parseDouble(newWeight);
+                            if (dbHelper.insertWeight(username, newWeightRecord)) {
+                                // Show user success
+                                Toast.makeText(getContext(), "Record added", Toast.LENGTH_SHORT).show();
+                                // Check for goal match
+                                double goal = dbHelper.getGoalWeight(username);
+                                // Check SMS
+                                boolean canSendSms = sharedPreferences.getBoolean("sms_enabled", false);
+                                // If canSendSMS, send SMS notification; else display toast
+                                if (canSendSms) {
+                                    dbHelper.checkAndSendGoalSMS(getContext(), username, newWeightRecord, goal);
+                                }
+                                else {
+                                    dbHelper.checkGoal(getContext(), newWeightRecord, goal);
+                                }
+                                // Refresh page
+                                refreshHome();
+                            }
+                            else {
+                                // Show error
+                                Toast.makeText(getContext(), "Action failed. Try again.", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        catch (NumberFormatException e) {
+                            // Show error
+                            Toast.makeText(getContext(), "Please enter a number (eg. 100.00)", Toast.LENGTH_SHORT).show();
+                        }
+                        // Close the dialog box
+                        dialog.dismiss();
+                    }
+                });
+
+                // When cancel button is clicked, dismiss the dialog
+                Button buttonCancel = dialog.findViewById(R.id.cancelAddRecord);
+                buttonCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Close the dialog box
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+            }
+        });
+        // Inflate the layout for this fragment
+        return view;
+    }
+
+    private void refreshHome() {
+        double current = dbHelper.getLatestWeight(username);
+        double goal = dbHelper.getGoalWeight(username);
+
+        if (current != 0.0) {
+            currentWeight.setText(current + " lbs");
+        } else {
+            currentWeight.setText("0.0");
+        }
+
+        // If weight has been logged display data, else display default text
+        if (goal != 0.0) {
+            if (current != 0.0) {
+                double goalDiff = abs(current - goal);
+                goalStatus.setText(Double.toString(goalDiff) + " lbs to go!");
+            }
+            else {
+                goalStatus.setText(Double.toString(goal) + " lbs to go!");
+            }
+        }
+        else {
+            goalStatus.setText("No goal set!");
+        }
+    }
+}

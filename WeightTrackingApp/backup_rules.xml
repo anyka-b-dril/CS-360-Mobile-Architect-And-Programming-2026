@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="5dp">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Date !-->
+        <TextView
+            android:id="@+id/dateText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:gravity="center_horizontal"
+            android:text="DATE"
+            android:paddingBottom="16dp"
+            android:textColor="@color/black"
+            android:background="@color/bluebellBlue"/>
+
+        <!-- Weight Record !-->
+        <TextView
+            android:id="@+id/weightRecord"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:gravity="center_horizontal"
+            android:text="100.00"
+            android:layout_alignEnd="@id/dateText"
+            android:layout_below="@id/dateText"
+            android:paddingBottom="16dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:background="@color/gray"/>
+    </RelativeLayout>
+
+
+</RelativeLayout>

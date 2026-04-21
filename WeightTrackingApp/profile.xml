@@ -1,0 +1,79 @@
+package com.example.cs360_weightappfinal_anyka.fragments;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+
+import androidx.fragment.app.Fragment;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.example.cs360_weightappfinal_anyka.DBHelper;
+import com.example.cs360_weightappfinal_anyka.MainActivity;
+import com.example.cs360_weightappfinal_anyka.R;
+
+
+public class LoginFragment extends Fragment {
+
+    Button loginButton;
+    EditText etUsername;
+    EditText etPassword;
+    DBHelper dbHelper;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_login, container, false);
+        loginButton = view.findViewById(R.id.loginButton);
+
+        etUsername = view.findViewById(R.id.usernameField);
+        etPassword = view.findViewById(R.id.passwordField);
+        dbHelper = new DBHelper(getContext());
+
+        // When Login button is pressed, navigate to Home
+        // Ref: https://learn.zybooks.com/zybook/CS-360-17398.202616-1/chapter/3/section/6
+        // Ref: https://learn.zybooks.com/zybook/CS-360-17398.202616-1/chapter/5/section/1
+        // Ref: https://www.youtube.com/watch?v=WAejZCkLJAI @12:30
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Initialize variables
+                String username;
+                String password;
+                // Set variables to edit text content
+                username = etUsername.getText().toString();
+                password = etPassword.getText().toString();
+
+                boolean isLoggedId = dbHelper.validateLogin(username, password);
+                // if username and password are valid, continue to the home page
+                if (isLoggedId) {
+                    // Save username as a session
+                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("current_username", username);
+                    editor.apply();
+
+                    // Start main activity
+                    Intent intent = new Intent(v.getContext(), MainActivity.class);
+                    startActivity(intent);
+                    //Navigation.findNavController(v).navigate(R.id.action_login_to_home);
+
+                    // Close the AuthActivity
+                    //getActivity().finish();
+                }
+                // if user is not found, display error
+                else {
+                    Toast.makeText(getContext(), "Error: username or password not found.", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        // Inflate the layout for this fragment
+        return view;
+    }
+}

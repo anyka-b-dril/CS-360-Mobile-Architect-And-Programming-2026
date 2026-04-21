@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp"
+    android:gravity="center_horizontal"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <!-- Header Image: Target Logo !-->
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+
+        android:paddingBottom="16dp"
+        android:paddingStart="300dp"
+        android:paddingEnd="10dp"
+        android:contentDescription="Target Logo"/>
+
+    <TextView
+        android:id="@+id/screenTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Weight Records"
+        android:textSize="36sp"
+        android:textColor="@color/black"
+        android:paddingBottom="16dp">
+    </TextView>
+
+    <!-- Table Grid !-->
+    <!-- display date, weight, and increase/decrease stat -->
+    <GridView
+        android:id="@+id/gridView"
+        android:layout_width="match_parent"
+        android:layout_height="450dp"
+        android:numColumns="2"
+        android:layout_weight="1"/>
+
+    <!-- Add weight record !-->
+    <!-- Add weight record !-->
+    <ImageButton
+        android:id="@+id/addButton"
+        android:src="@drawable/add"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignEnd="@id/tilGoalStatus"
+        android:layout_below="@id/tilGoalStatus"
+        android:baselineAlignBottom="true"
+        android:background="@color/bluebellBlue">
+    </ImageButton>
+
+</LinearLayout>

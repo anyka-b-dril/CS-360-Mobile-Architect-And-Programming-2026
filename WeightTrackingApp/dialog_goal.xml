@@ -1,0 +1,87 @@
+package com.example.cs360_weightappfinal_anyka;
+
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.view.MenuItem;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.cs360_weightappfinal_anyka.fragments.HomeFragment;
+import com.example.cs360_weightappfinal_anyka.fragments.ProfileFragment;
+import com.example.cs360_weightappfinal_anyka.fragments.RecordsFragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
+
+public class MainActivity extends AppCompatActivity {
+
+    // Ref: https://www.youtube.com/watch?v=OV25x3a55pk
+    BottomNavigationView bottomNavigationView;
+    // Initialize fragments
+    HomeFragment homeFragment = new HomeFragment();
+    RecordsFragment recordsFragment = new RecordsFragment();
+    ProfileFragment profileFragment = new ProfileFragment();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, homeFragment).commit();
+
+        // Check SMS permissions when activity starts
+        if (checkSelfPermission(android.Manifest.permission.SEND_SMS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{android.Manifest.permission.SEND_SMS}, 101);
+        }
+
+        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                // Although this was originally switch statements, I continued to get a
+                // static expression required error.
+                int id = menuItem.getItemId();
+                if (id == R.id.home) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.container, homeFragment).commit();
+                    return true;
+                }
+                if (id == R.id.record) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.container, recordsFragment).commit();
+                    return true;
+                }
+                if (id == R.id.you) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.container, profileFragment).commit();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+    }
+
+    // Inside MainActivity.java
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == 101) { // The code used in requestPermissions
+            // If permission was granted, sync SharedPreferences
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                SharedPreferences sharedPreferences = getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean("sms_enabled", true);
+                editor.apply();
+
+                Toast.makeText(this, "SMS Notifications Enabled", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+
+}
+

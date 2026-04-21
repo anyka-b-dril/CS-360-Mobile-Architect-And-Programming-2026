@@ -1,0 +1,73 @@
+package com.example.cs360_weightappfinal_anyka;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.TextView;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Locale;
+
+public class GridAdapter extends BaseAdapter {
+
+    Context context;
+    private List<WeightRecord> historyList;
+
+    public GridAdapter(Context context, List<WeightRecord> dataValues) {
+        this.context = context;
+        this.historyList = dataValues;
+    }
+
+    @Override
+    public int getCount() {
+        if (historyList == null) {
+            return 0;
+        }
+        return historyList.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return historyList.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        if (convertView == null) {
+            convertView = LayoutInflater.from(context).inflate(R.layout.grid_item, parent, false);
+        }
+
+        // Get the current record object
+        WeightRecord currentRecord = historyList.get(position);
+        // Get textviews
+        TextView textDate = convertView.findViewById(R.id.dateText);
+        TextView textWeight = convertView.findViewById(R.id.weightRecord);
+
+        if (currentRecord != null) {
+            // Format Date
+            String dbTimestamp = (currentRecord.getDate());
+            // Define input and output format
+            DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+            DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy, hh:mm a", Locale.ENGLISH);
+            // Parse and Format
+            LocalDateTime date = LocalDateTime.parse(dbTimestamp, inputFormatter);
+            String formattedDate = date.format(outputFormatter);
+            // Output: "17 Apr 2026, 02:30 PM"
+
+            // Set text in view
+            textDate.setText(formattedDate);
+            textWeight.setText(currentRecord.getWeight() + " lbs");
+        }
+
+        return convertView;
+    }
+}

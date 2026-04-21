@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- Banner !-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@color/pink">
+        <ImageView
+            android:src="@drawable/edit"
+            android:layout_centerInParent="true"
+            android:layout_width="match_parent"
+            android:layout_height="50dp" />
+    </RelativeLayout>
+
+    <!-- Info  !-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:orientation="vertical"/>
+
+    <!-- Edit Label  !-->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:paddingLeft="16dp"
+        android:text="New weight record: "
+        android:textColor="@color/black">
+    </TextView>
+
+    <!-- User input  !-->
+    <EditText
+        android:id="@+id/newWeight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:paddingLeft="16dp"
+        android:hint="Set Your Weight"
+        android:inputType="numberDecimal"/>
+
+    <!-- Buttons  !-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingRight="5dp"
+        android:paddingLeft="5dp">
+
+        <!-- Cancel  !-->
+        <Button
+            android:id="@+id/cancelAddRecord"
+            android:layout_width="175dp"
+            android:layout_height="50dp"
+            android:layout_alignParentLeft="true"
+            android:text="Cancel">
+        </Button>
+
+        <!-- Save  !-->
+        <Button
+            android:id="@+id/saveAddRecord"
+            android:layout_width="175dp"
+            android:layout_height="50dp"
+            android:layout_alignParentRight="true"
+            android:text="Save">
+        </Button>
+
+    </RelativeLayout>
+
+</LinearLayout>
