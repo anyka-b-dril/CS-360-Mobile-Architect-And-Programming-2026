@@ -1,6 +1,7 @@
 
 <ul>
   <li><b> Briefly summarize the requirements and goals of the app you developed. What user needs was this app designed to address? </b></li>
+  <br>
   <p> The app that I developed aims to help individuals track their weight. The app provides a secure login for returning users and allows new users to create an account with a username, password, and phone number. The app then allows users to log their current weight on any screen, set a goal weight, displays the current weight and caculates how many pounds until the goal is reached, displays all logged weights in a grid, and notfies the user via SMS when they have reached their goal. </p>
   
   <li><b> What screens and features were necessary to support user needs and produce a user-centered UI for the app? How did your UI designs keep users in mind? Why were your designs successful? </b></li>
