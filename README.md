@@ -10,7 +10,7 @@
   
   <li><b> How did you approach the process of coding your app? What techniques or strategies did you use? How could those techniques or strategies be applied in the future? </b></li>
    <br>
-  <p> </p>
+  <p> When coding my app, I broke down each requirement and feature into parts and focused on implementing them in relevance of importance. For this project, I began by mapping each screen to eachother correctly-- the login button should take the user to the home page, then the records button should navigate to the records page, and the you button navigates to the profile page. Then I worked on validating the username and password for an appropriate authentication and so forth. This strategy ensures that the real problem (in this case: being able to log and track weight records) is solved first and the highest possible product value is delivered to the client. This strategy is incredibly useful in the future when working on large project with tight deadlines and resource budgets.  </p>
   
   <li><b> How did you test to ensure your code was functional? Why is this process important, and what did it reveal? </b></li>
    <br>
