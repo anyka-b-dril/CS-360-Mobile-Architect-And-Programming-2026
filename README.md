@@ -14,11 +14,11 @@
   
   <li><b> How did you test to ensure your code was functional? Why is this process important, and what did it reveal? </b></li>
    <br>
-  <p> </p>
+  <p> To ensure my code was function, I tested the app after each time a feature was implement. For example, after coding the logic to add a new weight record when the chevron was pressed on the profile page, I booted up the app, created an account, navigated to the profile screen, selected the current weight chevron. Then I validated that the correct dialog box opened, the box was able to be canceled by clicking off the box and with the cancel button, the edit text box would pull up with the number keyboard, the weight could be saved when the save button was pressed, and the app displayed and error toast when an invalid weight was submitted. This process is crucial to ensure that every part of the app works as expected and to reveal any bugs. If this proccess revealed an error or unexpected behavior, such as a success toast appearing when I expected an error toast, I would review the code and input debugging statements between actions. For example, when making sure the new records were inserted into the database without a visual, I included a Log.d statment into the DBHelper to print the records found in the database and report that it was added. </p>
   
   <li><b> Consider the full app design and development process from initial planning to finalization. Where did you have to innovate to overcome a challenge? </b></li>
    <br>
-  <p> </p>
+  <p> The most challenging part of this app design was creating the grid view. Most resources I found when looking for a tutorial to use a gridview widget with a SQL Lite database recommended to use a list view instead. I had no real idea of what was possible with the widget. Despite this, I did my best to learn how the gridview widget worked through simpler tutorials, then used what I knew from creating the dialog widgets to populate it. Once I had a simple grid of date and weight data, I then continued to improve the design by formatting the dates. However, it was still difficult to disinguish between each data item. I then enhanced the grid item layout with appropiately sized text, text styles, a colored header, and a colored body that contained each element.  </p>
   
   <li><b> In what specific component of your mobile app were you particularly successful in demonstrating your knowledge, skills, and experience? </b></li>
    <br>
