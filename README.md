@@ -22,7 +22,7 @@
   
   <li><b> In what specific component of your mobile app were you particularly successful in demonstrating your knowledge, skills, and experience? </b></li>
    <br>
-  <p> </p>
+  <p> I was particularly successful in the way each activity and screen was mapped together through interactive elements like the tabbed layout and navigation bar. The tabbed layout design in the AuthAcivity (login screen) allowed me to easily put the login and create account options on the same screen, which considerable reduced the user cognitive load. Additionally, the mainActivity, like the tabbed design, uses a single view and populates that view depending on the fragment selected in the navigtation bar. This considerable reduced the amount of code needed to switch between screens and makes it easy to add new fragment to the navigation.  </p>
   
 </ul>
 
